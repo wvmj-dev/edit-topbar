@@ -1,0 +1,14 @@
+{
+  "uuid": "edit-topbar@wvmj-dev.github.io",
+  "name": "Edit Top Bar",
+  "description": "Rearrange, hide and show the items of the top bar. Move any indicator to the left, center or right, reorder the system icons, and choose when each item appears: always, never, only in the overview, on hover, on empty workspaces or with a keyboard shortcut.",
+  "settings-schema": "org.gnome.shell.extensions.edit-topbar",
+  "gettext-domain": "edit-topbar",
+  "shell-version": [
+    "48",
+    "49",
+    "50"
+  ],
+  "version": 1,
+  "url": "https://github.com/wvmj-dev/edit-topbar"
+}

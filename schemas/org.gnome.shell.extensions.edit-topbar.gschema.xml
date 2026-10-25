@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.edit-topbar"
+          path="/org/gnome/shell/extensions/edit-topbar/">
+    <key name="layout" type="a{sas}">
+      <default>{}</default>
+      <summary>Order of the items in each box</summary>
+      <description>Maps a box (left, center, right or status) to item ids in display order. Items missing from it stay where they are. Empty means the layout is not customized.</description>
+    </key>
+    <key name="rules" type="a{ss}">
+      <default>{}</default>
+      <summary>When each item is shown</summary>
+      <description>Maps an item id to a rule: always, never, overview, desktop, hover, empty-workspace or windows. Items missing from it are always shown.</description>
+    </key>
+    <key name="shortcuts" type="a{ss}">
+      <default>{}</default>
+      <summary>Keyboard shortcut that toggles each item</summary>
+      <description>Maps an item id to an accelerator such as &lt;Super&gt;&lt;Alt&gt;1. Pressing it shows a hidden item or hides a shown one; pressing it again returns the item to its rule.</description>
+    </key>
+    <key name="reveal-shortcut" type="as">
+      <default><![CDATA[['<Super><Alt>h']]]></default>
+      <summary>Keyboard shortcut that reveals every hidden item</summary>
+    </key>
+    <key name="reveal-timeout" type="i">
+      <range min="0" max="600"/>
+      <default>0</default>
+      <summary>Seconds before revealed items hide again</summary>
+      <description>0 keeps them visible until the shortcut is pressed again.</description>
+    </key>
+    <key name="hover-delay" type="i">
+      <range min="0" max="5000"/>
+      <default>500</default>
+      <summary>Milliseconds before "on hover" items hide after the pointer leaves the top bar</summary>
+    </key>
+    <key name="known-items" type="a(ssss)">
+      <default>[]</default>
+      <summary>Items found in the top bar (written by the extension)</summary>
+      <description>Each entry is (id, box, label, icon), in display order. The preferences read it to list the items; changing it has no effect.</description>
+    </key>
+  </schema>
+</schemalist>
