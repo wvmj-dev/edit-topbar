@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: edit-topbar@wvmj-dev.github.io\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-24 22:07-0300\n"
+"POT-Creation-Date: 2026-10-24 22:25-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -141,167 +141,246 @@ msgstr ""
 msgid "System menu icons"
 msgstr ""
 
-#: prefs.js:60
+#: prefs.js:60 prefs.js:76
 msgid "Always"
 msgstr ""
 
 #: prefs.js:61
-msgid "Never (only with a shortcut)"
+msgid "Hidden"
 msgstr ""
 
 #: prefs.js:62
+msgid "Hide automatically"
+msgstr ""
+
+#: prefs.js:68
+msgid "A window touches the top bar"
+msgstr ""
+
+#: prefs.js:68
+msgid "Like \"intellihide\": windows away from the top keep it visible"
+msgstr ""
+
+#: prefs.js:69
+msgid "A window is maximized"
+msgstr ""
+
+#: prefs.js:69
+msgid "On the monitor of the top bar"
+msgstr ""
+
+#: prefs.js:70
+msgid "The workspace has windows"
+msgstr ""
+
+#: prefs.js:70
+msgid "Minimized windows do not count"
+msgstr ""
+
+#: prefs.js:77
+msgid "Never (only with a shortcut)"
+msgstr ""
+
+#: prefs.js:78
 msgid "Only in the overview"
 msgstr ""
 
-#: prefs.js:63
+#: prefs.js:79
 msgid "Only outside the overview"
 msgstr ""
 
-#: prefs.js:64
+#: prefs.js:80
 msgid "Only when the pointer is over the top bar"
 msgstr ""
 
-#: prefs.js:65
+#: prefs.js:81
 msgid "Only on empty workspaces"
 msgstr ""
 
-#: prefs.js:66
+#: prefs.js:82
 msgid "Only when the workspace has windows"
 msgstr ""
 
-#: prefs.js:107
+#: prefs.js:123
 msgid "Set Shortcut"
 msgstr ""
 
-#: prefs.js:108
+#: prefs.js:124
 msgid "Press the new key combination, Esc to cancel or Backspace to disable."
 msgstr ""
 
-#: prefs.js:110 prefs.js:460
+#: prefs.js:126 prefs.js:473
 msgid "Cancel"
 msgstr ""
 
-#: prefs.js:142
-msgid "Reveal hidden items"
-msgstr ""
-
-#: prefs.js:143
-msgid "Shows every hidden item; press again to hide them"
-msgstr ""
-
-#: prefs.js:148
+#: prefs.js:159
 msgid "Disabled"
 msgstr ""
 
-#: prefs.js:157
+#: prefs.js:168
 msgid "Reset to default"
 msgstr ""
 
-#: prefs.js:185
+#: prefs.js:196
 msgid ""
 "Icons of the system menu can be reordered among themselves, but not moved "
 "out of it."
 msgstr ""
 
-#: prefs.js:195
+#: prefs.js:206
 msgid "Position"
 msgstr ""
 
-#: prefs.js:212
+#: prefs.js:223
 msgid "Show"
 msgstr ""
 
-#: prefs.js:228
+#: prefs.js:239 prefs.js:568
 msgid "Shortcut"
 msgstr ""
 
-#: prefs.js:229
+#: prefs.js:240
 msgid "Toggles this item; press again to return to the rule above"
 msgstr ""
 
-#: prefs.js:233
+#: prefs.js:244
 msgid "None"
 msgstr ""
 
-#: prefs.js:242
+#: prefs.js:253
 msgid "Remove shortcut"
 msgstr ""
 
-#: prefs.js:263
+#: prefs.js:274
 msgid "Items"
 msgstr ""
 
-#: prefs.js:268
+#: prefs.js:279
 msgid ""
 "Top to bottom is left to right in the top bar. Changes apply right away."
 msgstr ""
 
-#: prefs.js:271
+#: prefs.js:282
 msgid "No items found"
 msgstr ""
 
-#: prefs.js:272
+#: prefs.js:283
 msgid "Enable the extension, then reopen this window."
 msgstr ""
 
-#: prefs.js:390
+#: prefs.js:401
 msgid "Move left"
 msgstr ""
 
-#: prefs.js:391
+#: prefs.js:402
 msgid "Move right"
 msgstr ""
 
-#: prefs.js:425
+#: prefs.js:437
 msgid "Behavior"
 msgstr ""
 
-#: prefs.js:431
+#: prefs.js:443
 msgid "Shortcuts"
 msgstr ""
 
-#: prefs.js:432
+#: prefs.js:444
 msgid "Each item can also have its own shortcut, set on the Items page."
 msgstr ""
 
-#: prefs.js:436
+#: prefs.js:446
+msgid "Reveal hidden items"
+msgstr ""
+
+#: prefs.js:447
+msgid "Shows every hidden item and the top bar; press again to hide them"
+msgstr ""
+
+#: prefs.js:449
 msgid "Hide revealed items after"
 msgstr ""
 
-#: prefs.js:437
+#: prefs.js:450
 msgid "Seconds; 0 keeps them visible until the shortcut is pressed again"
 msgstr ""
 
-#: prefs.js:442
+#: prefs.js:455
 msgid "On hover"
 msgstr ""
 
-#: prefs.js:444
+#: prefs.js:457
 msgid "Hide delay"
 msgstr ""
 
-#: prefs.js:445
+#: prefs.js:458
 msgid ""
 "Milliseconds before items shown on hover hide after the pointer leaves the "
 "top bar"
 msgstr ""
 
-#: prefs.js:450
+#: prefs.js:463
 msgid "Reset"
 msgstr ""
 
-#: prefs.js:452
+#: prefs.js:465
 msgid "Restore the default top bar"
 msgstr ""
 
-#: prefs.js:457
+#: prefs.js:470
 msgid "Restore the default top bar?"
 msgstr ""
 
-#: prefs.js:458
-msgid "Positions, rules and item shortcuts will be removed."
+#: prefs.js:471
+msgid ""
+"Positions, rules, item shortcuts and the top bar visibility will be reset."
 msgstr ""
 
-#: prefs.js:461
+#: prefs.js:474
 msgid "Restore"
+msgstr ""
+
+#: prefs.js:500
+msgid "Top Bar"
+msgstr ""
+
+#: prefs.js:505
+msgid "Visibility"
+msgstr ""
+
+#: prefs.js:506
+msgid "While the top bar can hide, windows and the overview use its space."
+msgstr ""
+
+#: prefs.js:510
+msgid "Show the top bar"
+msgstr ""
+
+#: prefs.js:524
+msgid "Show in the overview"
+msgstr ""
+
+#: prefs.js:528
+msgid "Show when the pointer pushes the top edge"
+msgstr ""
+
+#: prefs.js:529
+msgid ""
+"It hides again after the pointer leaves, with the delay set on the Behavior "
+"page"
+msgstr ""
+
+#: prefs.js:536
+msgid "Hide automatically when"
+msgstr ""
+
+#: prefs.js:537
+msgid "Any of the checked situations hides the top bar."
+msgstr ""
+
+#: prefs.js:569
+msgid "Show or hide the top bar"
+msgstr ""
+
+#: prefs.js:570
+msgid "Works in every mode; press again to return to the mode above"
 msgstr ""

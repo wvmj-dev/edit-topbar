@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: edit-topbar@wvmj-dev.github.io\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-24 22:07-0300\n"
+"POT-Creation-Date: 2026-10-24 22:25-0300\n"
 "PO-Revision-Date: 2026-10-24 22:00-0300\n"
 "Last-Translator: Wender13 <77487372+Wender13@users.noreply.github.com>\n"
 "Language-Team: none\n"
@@ -140,175 +140,246 @@ msgstr "Direita"
 msgid "System menu icons"
 msgstr "Ícones do menu do sistema"
 
-#: prefs.js:60
+#: prefs.js:60 prefs.js:76
 msgid "Always"
 msgstr "Sempre"
 
 #: prefs.js:61
+msgid "Hidden"
+msgstr "Oculta"
+
+#: prefs.js:62
+msgid "Hide automatically"
+msgstr "Ocultar automaticamente"
+
+#: prefs.js:68
+msgid "A window touches the top bar"
+msgstr "Uma janela encosta na barra superior"
+
+#: prefs.js:68
+msgid "Like \"intellihide\": windows away from the top keep it visible"
+msgstr "Como o \"intellihide\": janelas longe do topo a mantêm visível"
+
+#: prefs.js:69
+msgid "A window is maximized"
+msgstr "Uma janela está maximizada"
+
+#: prefs.js:69
+msgid "On the monitor of the top bar"
+msgstr "No monitor da barra superior"
+
+#: prefs.js:70
+msgid "The workspace has windows"
+msgstr "O espaço de trabalho tem janelas"
+
+#: prefs.js:70
+msgid "Minimized windows do not count"
+msgstr "Janelas minimizadas não contam"
+
+#: prefs.js:77
 msgid "Never (only with a shortcut)"
 msgstr "Nunca (só com um atalho)"
 
-#: prefs.js:62
+#: prefs.js:78
 msgid "Only in the overview"
 msgstr "Só no panorama de atividades"
 
-#: prefs.js:63
+#: prefs.js:79
 msgid "Only outside the overview"
 msgstr "Só fora do panorama de atividades"
 
-#: prefs.js:64
+#: prefs.js:80
 msgid "Only when the pointer is over the top bar"
 msgstr "Só com o ponteiro sobre a barra superior"
 
-#: prefs.js:65
+#: prefs.js:81
 msgid "Only on empty workspaces"
 msgstr "Só em espaços de trabalho vazios"
 
-#: prefs.js:66
+#: prefs.js:82
 msgid "Only when the workspace has windows"
 msgstr "Só quando o espaço de trabalho tem janelas"
 
-#: prefs.js:107
+#: prefs.js:123
 msgid "Set Shortcut"
 msgstr "Definir atalho"
 
-#: prefs.js:108
+#: prefs.js:124
 msgid "Press the new key combination, Esc to cancel or Backspace to disable."
-msgstr ""
-"Pressione a nova combinação de teclas, Esc para cancelar ou Backspace para "
-"desativar."
+msgstr "Pressione a nova combinação de teclas, Esc para cancelar ou Backspace para desativar."
 
-#: prefs.js:110 prefs.js:460
+#: prefs.js:126 prefs.js:473
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: prefs.js:142
-msgid "Reveal hidden items"
-msgstr "Revelar itens ocultos"
-
-#: prefs.js:143
-msgid "Shows every hidden item; press again to hide them"
-msgstr "Mostra todos os itens ocultos; pressione de novo para ocultá-los"
-
-#: prefs.js:148
+#: prefs.js:159
 msgid "Disabled"
 msgstr "Desativado"
 
-#: prefs.js:157
+#: prefs.js:168
 msgid "Reset to default"
 msgstr "Restaurar o padrão"
 
-#: prefs.js:185
+#: prefs.js:196
 msgid ""
 "Icons of the system menu can be reordered among themselves, but not moved "
 "out of it."
-msgstr ""
-"Os ícones do menu do sistema podem ser reordenados entre si, mas não podem "
-"sair dele."
+msgstr "Os ícones do menu do sistema podem ser reordenados entre si, mas não podem sair dele."
 
-#: prefs.js:195
+#: prefs.js:206
 msgid "Position"
 msgstr "Posição"
 
-#: prefs.js:212
+#: prefs.js:223
 msgid "Show"
 msgstr "Mostrar"
 
-#: prefs.js:228
+#: prefs.js:239 prefs.js:568
 msgid "Shortcut"
 msgstr "Atalho"
 
-#: prefs.js:229
+#: prefs.js:240
 msgid "Toggles this item; press again to return to the rule above"
 msgstr "Alterna este item; pressione de novo para voltar à regra acima"
 
-#: prefs.js:233
+#: prefs.js:244
 msgid "None"
 msgstr "Nenhum"
 
-#: prefs.js:242
+#: prefs.js:253
 msgid "Remove shortcut"
 msgstr "Remover atalho"
 
-#: prefs.js:263
+#: prefs.js:274
 msgid "Items"
 msgstr "Itens"
 
-#: prefs.js:268
+#: prefs.js:279
 msgid ""
 "Top to bottom is left to right in the top bar. Changes apply right away."
-msgstr ""
-"De cima para baixo equivale a da esquerda para a direita na barra superior. "
-"As mudanças valem na hora."
+msgstr "De cima para baixo equivale a da esquerda para a direita na barra superior. As mudanças valem na hora."
 
-#: prefs.js:271
+#: prefs.js:282
 msgid "No items found"
 msgstr "Nenhum item encontrado"
 
-#: prefs.js:272
+#: prefs.js:283
 msgid "Enable the extension, then reopen this window."
 msgstr "Ative a extensão e abra esta janela de novo."
 
-#: prefs.js:390
+#: prefs.js:401
 msgid "Move left"
 msgstr "Mover para a esquerda"
 
-#: prefs.js:391
+#: prefs.js:402
 msgid "Move right"
 msgstr "Mover para a direita"
 
-#: prefs.js:425
+#: prefs.js:437
 msgid "Behavior"
 msgstr "Comportamento"
 
-#: prefs.js:431
+#: prefs.js:443
 msgid "Shortcuts"
 msgstr "Atalhos"
 
-#: prefs.js:432
+#: prefs.js:444
 msgid "Each item can also have its own shortcut, set on the Items page."
 msgstr "Cada item também pode ter o próprio atalho, definido na página Itens."
 
-#: prefs.js:436
+#: prefs.js:446
+msgid "Reveal hidden items"
+msgstr "Revelar itens ocultos"
+
+#: prefs.js:447
+msgid "Shows every hidden item and the top bar; press again to hide them"
+msgstr "Mostra todos os itens ocultos e a barra superior; pressione de novo para ocultá-los"
+
+#: prefs.js:449
 msgid "Hide revealed items after"
 msgstr "Ocultar itens revelados após"
 
-#: prefs.js:437
+#: prefs.js:450
 msgid "Seconds; 0 keeps them visible until the shortcut is pressed again"
 msgstr "Segundos; 0 os mantém visíveis até o atalho ser pressionado de novo"
 
-#: prefs.js:442
+#: prefs.js:455
 msgid "On hover"
 msgstr "Ao passar o ponteiro"
 
-#: prefs.js:444
+#: prefs.js:457
 msgid "Hide delay"
 msgstr "Atraso para ocultar"
 
-#: prefs.js:445
+#: prefs.js:458
 msgid ""
 "Milliseconds before items shown on hover hide after the pointer leaves the "
 "top bar"
-msgstr ""
-"Milissegundos até os itens mostrados ao passar o ponteiro sumirem depois que "
-"ele sai da barra superior"
+msgstr "Milissegundos até os itens mostrados ao passar o ponteiro sumirem depois que ele sai da barra superior"
 
-#: prefs.js:450
+#: prefs.js:463
 msgid "Reset"
 msgstr "Restaurar"
 
-#: prefs.js:452
+#: prefs.js:465
 msgid "Restore the default top bar"
 msgstr "Restaurar a barra superior padrão"
 
-#: prefs.js:457
+#: prefs.js:470
 msgid "Restore the default top bar?"
 msgstr "Restaurar a barra superior padrão?"
 
-#: prefs.js:458
-msgid "Positions, rules and item shortcuts will be removed."
-msgstr "Posições, regras e atalhos dos itens serão removidos."
+#: prefs.js:471
+msgid ""
+"Positions, rules, item shortcuts and the top bar visibility will be reset."
+msgstr "Posições, regras, atalhos dos itens e a visibilidade da barra superior serão restaurados."
 
-#: prefs.js:461
+#: prefs.js:474
 msgid "Restore"
 msgstr "Restaurar"
+
+#: prefs.js:500
+msgid "Top Bar"
+msgstr "Barra superior"
+
+#: prefs.js:505
+msgid "Visibility"
+msgstr "Visibilidade"
+
+#: prefs.js:506
+msgid "While the top bar can hide, windows and the overview use its space."
+msgstr "Enquanto a barra superior pode se ocultar, as janelas e o panorama de atividades usam o espaço dela."
+
+#: prefs.js:510
+msgid "Show the top bar"
+msgstr "Mostrar a barra superior"
+
+#: prefs.js:524
+msgid "Show in the overview"
+msgstr "Mostrar no panorama de atividades"
+
+#: prefs.js:528
+msgid "Show when the pointer pushes the top edge"
+msgstr "Mostrar quando o ponteiro empurra a borda superior"
+
+#: prefs.js:529
+msgid ""
+"It hides again after the pointer leaves, with the delay set on the Behavior "
+"page"
+msgstr "Ela se oculta de novo quando o ponteiro sai, com o atraso definido na página Comportamento"
+
+#: prefs.js:536
+msgid "Hide automatically when"
+msgstr "Ocultar automaticamente quando"
+
+#: prefs.js:537
+msgid "Any of the checked situations hides the top bar."
+msgstr "Qualquer uma das situações marcadas oculta a barra superior."
+
+#: prefs.js:569
+msgid "Show or hide the top bar"
+msgstr "Mostrar ou ocultar a barra superior"
+
+#: prefs.js:570
+msgid "Works in every mode; press again to return to the mode above"
+msgstr "Funciona em todos os modos; pressione de novo para voltar ao modo acima"
