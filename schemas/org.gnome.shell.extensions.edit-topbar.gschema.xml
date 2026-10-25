@@ -32,6 +32,34 @@
       <default>500</default>
       <summary>Milliseconds before "on hover" items hide after the pointer leaves the top bar</summary>
     </key>
+    <key name="panel-mode" type="s">
+      <choices>
+        <choice value="always"/>
+        <choice value="never"/>
+        <choice value="auto"/>
+      </choices>
+      <default>'always'</default>
+      <summary>When the whole top bar is shown</summary>
+      <description>always: GNOME's default. never: hidden, shown only by the pointer, a menu or a shortcut. auto: hidden while any of panel-hide-when is true.</description>
+    </key>
+    <key name="panel-hide-when" type="as">
+      <default>['overlap']</default>
+      <summary>Situations that hide the top bar in auto mode</summary>
+      <description>Any of: overlap (a window touches the top bar), maximized (a window is maximized on its monitor), windows (the workspace has windows).</description>
+    </key>
+    <key name="panel-show-in-overview" type="b">
+      <default>true</default>
+      <summary>Show the hidden top bar while the overview is open</summary>
+    </key>
+    <key name="panel-reveal-on-pressure" type="b">
+      <default>true</default>
+      <summary>Show the hidden top bar when the pointer pushes against the top edge</summary>
+    </key>
+    <key name="panel-shortcut" type="as">
+      <default><![CDATA[['<Super><Alt>t']]]></default>
+      <summary>Keyboard shortcut that shows or hides the top bar</summary>
+      <description>Pressing it shows a hidden top bar or hides a shown one; pressing it again returns the top bar to panel-mode.</description>
+    </key>
     <key name="known-items" type="a(ssss)">
       <default>[]</default>
       <summary>Items found in the top bar (written by the extension)</summary>

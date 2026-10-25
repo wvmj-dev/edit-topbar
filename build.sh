@@ -15,7 +15,7 @@ cd "$(dirname "$0")"
 UUID=$(sed -n 's/.*"uuid": *"\([^"]*\)".*/\1/p' metadata.json)
 DOMAIN=edit-topbar
 # Every JavaScript file the extension needs at run time.
-SOURCES=(extension.js prefs.js rules.js)
+SOURCES=(extension.js prefs.js rules.js panel.js)
 # Shortcut inside ./build.sh dev; the host shell keeps the real one.
 DEV_SHORTCUT='<Super><Alt>j'
 

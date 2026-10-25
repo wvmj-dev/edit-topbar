@@ -7,7 +7,8 @@ import St from 'gi://St';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-import {BOXES, isVisible, resolveLayout} from './rules.js';
+import {TopBarHider} from './panel.js';
+import {BOXES, isPanelVisible, isVisible, resolveLayout} from './rules.js';
 
 // Prefix of the ids of the icons inside the system menu button.
 const STATUS_PREFIX = 'status:';
@@ -50,6 +51,10 @@ export default class EditTopBarExtension extends Extension {
         // Accelerator action -> {id, name} of the per-item shortcuts.
         this._grabs = new Map();
         this._menus = new Set();
+        // Windows watched for the top bar conditions.
+        this._windows = new Set();
+        // Set by the top bar shortcut: forced visibility, or undefined.
+        this._panelForced = undefined;
         this._knownJson = '';
         this._moved = false;
         this._applying = false;
@@ -57,17 +62,27 @@ export default class EditTopBarExtension extends Extension {
         this._hoverId = 0;
         this._revealId = 0;
         this._windowsId = 0;
+        this._pointerId = 0;
         this._state = {
             overview: Main.overview.visible,
             hover: false,
             windows: false,
             revealed: false,
+            pointer: false,
+            menuOpen: false,
+            overlap: false,
+            maximized: false,
         };
+        this._hider = new TopBarHider(() => this._onPressure());
 
         this._settings.connectObject(
             'changed::layout', () => this._queueUpdate(),
             'changed::rules', () => this._queueUpdate(),
             'changed::shortcuts', () => this._grabShortcuts(),
+            'changed::panel-mode', () => this._syncPanel(),
+            'changed::panel-hide-when', () => this._syncPanel(),
+            'changed::panel-show-in-overview', () => this._syncPanel(),
+            'changed::panel-reveal-on-pressure', () => this._syncPanel(),
             this);
 
         // Indicators come and go as other extensions are enabled, and the
@@ -89,12 +104,19 @@ export default class EditTopBarExtension extends Extension {
         panel.connectObject('notify::hover', () => this._syncHover(), this);
 
         global.workspace_manager.connectObject('active-workspace-changed',
-            () => this._trackWorkspace(), this);
-        this._trackWorkspace();
+            () => this._queueWindows(), this);
+        global.display.connectObject('window-created',
+            (_display, window) => this._watchWindow(window), this);
+        for (const actor of global.get_window_actors())
+            this._watchWindow(actor.meta_window);
+        this._syncWindows();
 
         Main.wm.addKeybinding('reveal-shortcut', this._settings,
             Meta.KeyBindingFlags.IGNORE_AUTOREPEAT, SHORTCUT_MODES,
             () => this._toggleReveal());
+        Main.wm.addKeybinding('panel-shortcut', this._settings,
+            Meta.KeyBindingFlags.IGNORE_AUTOREPEAT, SHORTCUT_MODES,
+            () => this._togglePanel());
         global.display.connectObject('accelerator-activated', (_display, action) => {
             const grab = this._grabs.get(action);
             if (grab)
@@ -103,21 +125,26 @@ export default class EditTopBarExtension extends Extension {
         this._grabShortcuts();
 
         this._update();
+        this._syncPanel();
     }
 
     disable() {
-        for (const id of [this._updateId, this._hoverId, this._revealId, this._windowsId]) {
+        for (const id of [this._updateId, this._hoverId, this._revealId, this._windowsId, this._pointerId]) {
             if (id)
                 GLib.source_remove(id);
         }
-        this._updateId = this._hoverId = this._revealId = this._windowsId = 0;
+        this._updateId = this._hoverId = this._revealId = this._windowsId = this._pointerId = 0;
 
+        this._hider.destroy();
+        this._hider = null;
         Main.wm.removeKeybinding('reveal-shortcut');
+        Main.wm.removeKeybinding('panel-shortcut');
         this._ungrabShortcuts();
         global.display.disconnectObject(this);
         global.workspace_manager.disconnectObject(this);
-        this._workspace?.disconnectObject(this);
-        this._workspace = null;
+        for (const window of this._windows)
+            window.disconnectObject(this);
+        this._windows.clear();
         Main.overview.disconnectObject(this);
         Main.sessionMode.disconnectObject(this);
         Main.panel.disconnectObject(this);
@@ -379,10 +406,17 @@ export default class EditTopBarExtension extends Extension {
     // --- Conditions ---------------------------------------------------------
 
     _setState(key, value) {
-        if (this._state[key] === value)
+        this._setStates({[key]: value});
+    }
+
+    _setStates(changes) {
+        const changed = Object.entries(changes).filter(([key, value]) => this._state[key] !== value);
+        if (!changed.length)
             return;
-        this._state[key] = value;
+        for (const [key, value] of changed)
+            this._state[key] = value;
         this._syncVisibility();
+        this._syncPanel();
     }
 
     // The pointer is over the top bar, or in one of its open menus.
@@ -391,6 +425,8 @@ export default class EditTopBarExtension extends Extension {
     }
 
     _syncHover() {
+        // A menu opening from a hidden top bar needs it shown at once.
+        this._setState('menuOpen', [...this._menus].some(menu => menu.isOpen));
         const active = this._isHovered();
         if (this._hoverId) {
             GLib.source_remove(this._hoverId);
@@ -408,30 +444,114 @@ export default class EditTopBarExtension extends Extension {
         });
     }
 
-    _trackWorkspace() {
-        this._workspace?.disconnectObject(this);
-        this._workspace = global.workspace_manager.get_active_workspace();
-        // A new window is not fully set up when window-added fires.
-        const sync = () => {
-            if (this._windowsId)
-                return;
-            this._windowsId = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-                this._windowsId = 0;
-                this._syncWindows();
-                return GLib.SOURCE_REMOVE;
-            });
-        };
-        this._workspace.connectObject(
-            'window-added', sync,
-            'window-removed', sync,
+    _watchWindow(window) {
+        if (this._windows.has(window))
+            return;
+        this._windows.add(window);
+        const queue = () => this._queueWindows();
+        window.connectObject(
+            'position-changed', queue,
+            'size-changed', queue,
+            'workspace-changed', queue,
+            'notify::minimized', queue,
+            'unmanaged', () => {
+                window.disconnectObject(this);
+                this._windows.delete(window);
+                queue();
+            },
             this);
-        this._syncWindows();
+        queue();
+    }
+
+    // Windows move many times per second while dragged; check once per idle.
+    // A new window is not fully set up when window-created fires, either.
+    _queueWindows() {
+        if (this._windowsId)
+            return;
+        this._windowsId = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+            this._windowsId = 0;
+            this._syncWindows();
+            return GLib.SOURCE_REMOVE;
+        });
     }
 
     _syncWindows() {
-        const windows = this._workspace.list_windows().some(window =>
-            !window.skip_taskbar && window.get_window_type() !== Meta.WindowType.DESKTOP);
-        this._setState('windows', windows);
+        const workspace = global.workspace_manager.get_active_workspace();
+        const monitor = Main.layoutManager.primaryMonitor;
+        const panelHeight = Main.layoutManager.panelBox.height;
+        const state = {windows: false, maximized: false, overlap: false};
+        for (const window of this._windows) {
+            if (window.skip_taskbar || window.minimized || !window.located_on_workspace(workspace) ||
+                window.get_window_type() === Meta.WindowType.DESKTOP)
+                continue;
+            state.windows = true;
+            if (!monitor)
+                continue;
+            if (window.get_monitor() === monitor.index && window.maximized_vertically)
+                state.maximized = true;
+            const rect = window.get_frame_rect();
+            if (rect.x < monitor.x + monitor.width && rect.x + rect.width > monitor.x &&
+                rect.y < monitor.y + panelHeight && rect.y + rect.height > monitor.y)
+                state.overlap = true;
+        }
+        this._setStates(state);
+    }
+
+    // --- Whole top bar ------------------------------------------------------
+
+    _panelOptions() {
+        return {
+            mode: this._settings.get_string('panel-mode'),
+            hideWhen: this._settings.get_strv('panel-hide-when'),
+            showInOverview: this._settings.get_boolean('panel-show-in-overview'),
+        };
+    }
+
+    _syncPanel() {
+        if (!this._hider)
+            return;
+        const options = this._panelOptions();
+        // The top bar gives its space to the windows only while it can hide,
+        // so in "always" mode nothing changes unless the shortcut hides it.
+        const canHide = options.mode !== 'always' || this._panelForced === false;
+        this._hider.setStruts(!canHide);
+        this._hider.setSearchPadding(canHide && options.showInOverview);
+        this._hider.setPressure(canHide && this._settings.get_boolean('panel-reveal-on-pressure'));
+        this._hider.setVisible(isPanelVisible(options, this._state, this._panelForced), !this._state.menuOpen);
+    }
+
+    /**
+     * Shows the top bar while the pointer stays on it, after pushing the top
+     * edge. The pointer is checked on a short timer because the top bar
+     * slides in under a pointer that has not moved, so no enter or leave
+     * event is guaranteed.
+     */
+    _onPressure() {
+        if (this._pointerId || isPanelVisible(this._panelOptions(), this._state, this._panelForced))
+            return;
+        this._setState('pointer', true);
+        let away = 0;
+        this._pointerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+            const [x, y] = global.get_pointer();
+            away = this._hider.contains(x, y) || this._state.menuOpen ? 0 : away + 100;
+            if (away < Math.max(this._settings.get_int('hover-delay'), 100))
+                return GLib.SOURCE_CONTINUE;
+            this._pointerId = 0;
+            this._setState('pointer', false);
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+
+    /**
+     * Shows a hidden top bar or hides a shown one; the next press returns it
+     * to its mode.
+     */
+    _togglePanel() {
+        if (this._panelForced !== undefined)
+            this._panelForced = undefined;
+        else
+            this._panelForced = !isPanelVisible(this._panelOptions(), this._state);
+        this._syncPanel();
     }
 
     // --- Shortcuts ----------------------------------------------------------

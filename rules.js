@@ -46,6 +46,44 @@ export function isVisible(rule, state, forced) {
     }
 }
 
+// When the whole top bar is shown. "always" leaves it alone.
+export const PANEL_MODES = ['always', 'never', 'auto'];
+
+// Situations that hide the top bar in "auto" mode; any of them is enough.
+export const PANEL_CONDITIONS = ['overlap', 'maximized', 'windows'];
+
+/**
+ * Whether the whole top bar should be visible.
+ *
+ * @param {object} options top bar settings
+ * @param {string} options.mode one of PANEL_MODES; unknown values count as "always"
+ * @param {string[]} options.hideWhen conditions of "auto" mode, from PANEL_CONDITIONS
+ * @param {boolean} options.showInOverview show the top bar while the overview is open
+ * @param {object} state current shell state
+ * @param {boolean} state.overview the overview is showing
+ * @param {boolean} state.revealed the "reveal hidden items" shortcut is active
+ * @param {boolean} state.pointer the pointer pushed the top edge and is still on the top bar
+ * @param {boolean} state.menuOpen a menu of the top bar is open
+ * @param {boolean} state.overlap a window touches the top bar
+ * @param {boolean} state.maximized a window is maximized on the top bar's monitor
+ * @param {boolean} state.windows the active workspace has windows
+ * @param {boolean} [forced] set by the top bar shortcut; wins over everything
+ * @returns {boolean}
+ */
+export function isPanelVisible({mode, hideWhen, showInOverview}, state, forced) {
+    if (forced !== undefined)
+        return forced;
+    if (!PANEL_MODES.includes(mode) || mode === 'always')
+        return true;
+    if (state.revealed || state.pointer || state.menuOpen)
+        return true;
+    if (state.overview)
+        return showInOverview;
+    if (mode === 'never')
+        return false;
+    return !hideWhen.some(condition => PANEL_CONDITIONS.includes(condition) && state[condition]);
+}
+
 /**
  * Computes where every item goes.
  *
