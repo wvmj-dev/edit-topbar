@@ -1,0 +1,316 @@
+# Edit Top Bar translation.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the edit-topbar@wvmj-dev.github.io package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: edit-topbar@wvmj-dev.github.io\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-24 22:07-0300\n"
+"PO-Revision-Date: 2026-10-24 22:00-0300\n"
+"Last-Translator: Wender13 <77487372+Wender13@users.noreply.github.com>\n"
+"Language-Team: none\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: prefs.js:19
+msgid "Activities"
+msgstr "Actividades"
+
+#: prefs.js:20
+msgid "Clock and calendar"
+msgstr "Reloj y calendario"
+
+#: prefs.js:21
+msgid "System menu"
+msgstr "Menú del sistema"
+
+#: prefs.js:22
+msgid "Accessibility"
+msgstr "Accesibilidad"
+
+#: prefs.js:23
+msgid "Input source"
+msgstr "Fuente de entrada"
+
+#: prefs.js:24
+msgid "Dwell click"
+msgstr "Clic por permanencia"
+
+#: prefs.js:25
+msgid "Screen recording"
+msgstr "Grabación de pantalla"
+
+#: prefs.js:26
+msgid "Screen sharing"
+msgstr "Compartición de pantalla"
+
+#: prefs.js:27
+msgid "Remote access"
+msgstr "Acceso remoto"
+
+#: prefs.js:28
+msgid "Camera"
+msgstr "Cámara"
+
+#: prefs.js:29
+msgid "Microphone"
+msgstr "Micrófono"
+
+#: prefs.js:30
+msgid "Location"
+msgstr "Ubicación"
+
+#: prefs.js:31
+msgid "Brightness"
+msgstr "Brillo"
+
+#: prefs.js:32
+msgid "Thunderbolt"
+msgstr "Thunderbolt"
+
+#: prefs.js:33
+msgid "Night light"
+msgstr "Luz nocturna"
+
+#: prefs.js:34
+msgid "Network"
+msgstr "Red"
+
+#: prefs.js:35
+msgid "Dark style"
+msgstr "Estilo oscuro"
+
+#: prefs.js:36
+msgid "Do not disturb"
+msgstr "No molestar"
+
+#: prefs.js:37
+msgid "Keyboard backlight"
+msgstr "Retroiluminación del teclado"
+
+#: prefs.js:38
+msgid "Bluetooth"
+msgstr "Bluetooth"
+
+#: prefs.js:39
+msgid "Airplane mode"
+msgstr "Modo avión"
+
+#: prefs.js:40
+msgid "Auto rotate"
+msgstr "Rotación automática"
+
+#: prefs.js:41
+msgid "Volume"
+msgstr "Volumen"
+
+#: prefs.js:42
+msgid "Unsafe mode"
+msgstr "Modo inseguro"
+
+#: prefs.js:43
+msgid "Power mode"
+msgstr "Modo de energía"
+
+#: prefs.js:44
+msgid "Battery"
+msgstr "Batería"
+
+#: prefs.js:45
+msgid "Background apps"
+msgstr "Aplicaciones en segundo plano"
+
+#: prefs.js:51
+msgid "Left"
+msgstr "Izquierda"
+
+#: prefs.js:52
+msgid "Center"
+msgstr "Centro"
+
+#: prefs.js:53
+msgid "Right"
+msgstr "Derecha"
+
+#: prefs.js:54
+msgid "System menu icons"
+msgstr "Iconos del menú del sistema"
+
+#: prefs.js:60
+msgid "Always"
+msgstr "Siempre"
+
+#: prefs.js:61
+msgid "Never (only with a shortcut)"
+msgstr "Nunca (solo con un atajo)"
+
+#: prefs.js:62
+msgid "Only in the overview"
+msgstr "Solo en la vista de actividades"
+
+#: prefs.js:63
+msgid "Only outside the overview"
+msgstr "Solo fuera de la vista de actividades"
+
+#: prefs.js:64
+msgid "Only when the pointer is over the top bar"
+msgstr "Solo con el puntero sobre la barra superior"
+
+#: prefs.js:65
+msgid "Only on empty workspaces"
+msgstr "Solo en áreas de trabajo vacías"
+
+#: prefs.js:66
+msgid "Only when the workspace has windows"
+msgstr "Solo cuando el área de trabajo tiene ventanas"
+
+#: prefs.js:107
+msgid "Set Shortcut"
+msgstr "Definir atajo"
+
+#: prefs.js:108
+msgid "Press the new key combination, Esc to cancel or Backspace to disable."
+msgstr ""
+"Pulse la nueva combinación de teclas, Esc para cancelar o Retroceso para "
+"desactivar."
+
+#: prefs.js:110 prefs.js:460
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: prefs.js:142
+msgid "Reveal hidden items"
+msgstr "Revelar elementos ocultos"
+
+#: prefs.js:143
+msgid "Shows every hidden item; press again to hide them"
+msgstr "Muestra todos los elementos ocultos; pulse de nuevo para ocultarlos"
+
+#: prefs.js:148
+msgid "Disabled"
+msgstr "Desactivado"
+
+#: prefs.js:157
+msgid "Reset to default"
+msgstr "Restablecer el valor predeterminado"
+
+#: prefs.js:185
+msgid ""
+"Icons of the system menu can be reordered among themselves, but not moved "
+"out of it."
+msgstr ""
+"Los iconos del menú del sistema se pueden reordenar entre sí, pero no sacar "
+"de él."
+
+#: prefs.js:195
+msgid "Position"
+msgstr "Posición"
+
+#: prefs.js:212
+msgid "Show"
+msgstr "Mostrar"
+
+#: prefs.js:228
+msgid "Shortcut"
+msgstr "Atajo"
+
+#: prefs.js:229
+msgid "Toggles this item; press again to return to the rule above"
+msgstr "Alterna este elemento; pulse de nuevo para volver a la regla de arriba"
+
+#: prefs.js:233
+msgid "None"
+msgstr "Ninguno"
+
+#: prefs.js:242
+msgid "Remove shortcut"
+msgstr "Quitar atajo"
+
+#: prefs.js:263
+msgid "Items"
+msgstr "Elementos"
+
+#: prefs.js:268
+msgid ""
+"Top to bottom is left to right in the top bar. Changes apply right away."
+msgstr ""
+"De arriba abajo equivale a de izquierda a derecha en la barra superior. Los "
+"cambios se aplican al instante."
+
+#: prefs.js:271
+msgid "No items found"
+msgstr "No se encontraron elementos"
+
+#: prefs.js:272
+msgid "Enable the extension, then reopen this window."
+msgstr "Active la extensión y vuelva a abrir esta ventana."
+
+#: prefs.js:390
+msgid "Move left"
+msgstr "Mover a la izquierda"
+
+#: prefs.js:391
+msgid "Move right"
+msgstr "Mover a la derecha"
+
+#: prefs.js:425
+msgid "Behavior"
+msgstr "Comportamiento"
+
+#: prefs.js:431
+msgid "Shortcuts"
+msgstr "Atajos"
+
+#: prefs.js:432
+msgid "Each item can also have its own shortcut, set on the Items page."
+msgstr ""
+"Cada elemento también puede tener su propio atajo, definido en la página "
+"Elementos."
+
+#: prefs.js:436
+msgid "Hide revealed items after"
+msgstr "Ocultar los elementos revelados tras"
+
+#: prefs.js:437
+msgid "Seconds; 0 keeps them visible until the shortcut is pressed again"
+msgstr "Segundos; 0 los mantiene visibles hasta pulsar el atajo de nuevo"
+
+#: prefs.js:442
+msgid "On hover"
+msgstr "Al pasar el puntero"
+
+#: prefs.js:444
+msgid "Hide delay"
+msgstr "Retraso para ocultar"
+
+#: prefs.js:445
+msgid ""
+"Milliseconds before items shown on hover hide after the pointer leaves the "
+"top bar"
+msgstr ""
+"Milisegundos antes de que los elementos mostrados al pasar el puntero se "
+"oculten cuando este sale de la barra superior"
+
+#: prefs.js:450
+msgid "Reset"
+msgstr "Restablecer"
+
+#: prefs.js:452
+msgid "Restore the default top bar"
+msgstr "Restaurar la barra superior predeterminada"
+
+#: prefs.js:457
+msgid "Restore the default top bar?"
+msgstr "¿Restaurar la barra superior predeterminada?"
+
+#: prefs.js:458
+msgid "Positions, rules and item shortcuts will be removed."
+msgstr "Se eliminarán las posiciones, reglas y atajos de los elementos."
+
+#: prefs.js:461
+msgid "Restore"
+msgstr "Restaurar"
