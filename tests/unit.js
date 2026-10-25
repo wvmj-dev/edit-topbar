@@ -1,6 +1,6 @@
 // Unit tests for the pure module. Run with: gjs -m tests/unit.js
 // (or ./build.sh unit). No GNOME Shell needed.
-import {BOXES, RULES, isVisible, mergeLayout, moveItem, resolveLayout} from '../rules.js';
+import {BOXES, PANEL_CONDITIONS, RULES, isPanelVisible, isVisible, mergeLayout, moveItem, resolveLayout} from '../rules.js';
 
 let failures = 0;
 let count = 0;
@@ -37,6 +37,35 @@ for (const rule of RULES)
 check('forced hide wins over always', !isVisible('always', idle, false));
 check('forced show wins over never', isVisible('never', idle, true));
 check('forced hide wins over reveal', !isVisible('never', {...idle, revealed: true}, false));
+
+// --- isPanelVisible ---------------------------------------------------------
+const calm = {overview: false, revealed: false, pointer: false, menuOpen: false,
+    overlap: false, maximized: false, windows: false};
+const busy = {...calm, overlap: true, maximized: true, windows: true};
+const auto = {mode: 'auto', hideWhen: ['overlap'], showInOverview: true};
+check('always ignores everything', isPanelVisible({...auto, mode: 'always'}, {...busy, overview: true}) &&
+    isPanelVisible({...auto, mode: 'always', showInOverview: false}, {...calm, overview: true}));
+check('unknown mode is always', isPanelVisible({...auto, mode: 'nonsense'}, busy));
+check('never hides', !isPanelVisible({...auto, mode: 'never'}, calm));
+check('auto shows without its condition', isPanelVisible(auto, {...calm, maximized: true, windows: true}));
+check('auto hides with its condition', !isPanelVisible(auto, {...calm, overlap: true}));
+for (const condition of PANEL_CONDITIONS) {
+    check(`auto ${condition}`, !isPanelVisible({...auto, hideWhen: [condition]}, {...calm, [condition]: true}) &&
+        isPanelVisible({...auto, hideWhen: [condition]}, calm));
+}
+check('any condition hides', !isPanelVisible({...auto, hideWhen: ['windows', 'maximized']}, {...calm, maximized: true}));
+check('no condition never hides', isPanelVisible({...auto, hideWhen: []}, busy));
+check('unknown condition is ignored', isPanelVisible({...auto, hideWhen: ['nonsense']}, {...calm, nonsense: true}));
+check('overview shows', isPanelVisible({...auto, mode: 'never'}, {...calm, overview: true}));
+check('overview can hide', !isPanelVisible({...auto, mode: 'never', showInOverview: false}, {...calm, overview: true}) &&
+    !isPanelVisible({...auto, showInOverview: false}, {...calm, overview: true}));
+for (const reason of ['revealed', 'pointer', 'menuOpen']) {
+    check(`${reason} shows`, isPanelVisible({...auto, mode: 'never', showInOverview: false},
+        {...busy, overview: true, [reason]: true}));
+}
+check('forced hide wins in always', !isPanelVisible({...auto, mode: 'always'}, calm, false));
+check('forced show wins in never', isPanelVisible({...auto, mode: 'never'}, calm, true));
+check('forced hide wins over a menu', !isPanelVisible(auto, {...calm, menuOpen: true}, false));
 
 // --- resolveLayout ----------------------------------------------------------
 check('empty layout keeps the current order', same(resolveLayout({}, CURRENT), CURRENT));

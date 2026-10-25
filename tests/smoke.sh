@@ -72,7 +72,13 @@ run() {
 # "(true, '<result>')", where the first true just means the call worked.
 is_true() { [[ $(js "$1" 2>/dev/null) == "(true, 'true')" ]]; }
 # Fails the test with a message unless the expression is true.
-expect() { is_true "$1" || { echo "FAILED: $2"; exit 1; }; }
+# The extension's state is printed to help find the cause.
+expect() {
+    is_true "$1" && return
+    echo "FAILED: $2"
+    js "JSON.stringify({state: $OBJ?._state, panelY: Main.layoutManager.panelBox.translation_y, overview: Main.overview.visible, hover: Main.panel.hover})"
+    exit 1
+}
 shot() {
     gdbus call --session --dest org.gnome.Shell --object-path /org/gnome/Shell/Screenshot \
         --method org.gnome.Shell.Screenshot.Screenshot false false "$ETB_OUT/$1.png" >/dev/null
@@ -217,9 +223,85 @@ dconf write ${P}rules "{'a11y': 'hover', 'status:volumeInput': 'never'}"
 dconf write ${P}shortcuts "{'dateMenu': '<Super><Alt>1'}"
 pause
 
-echo "11. preferences window"
-n=7
-for page in items behavior item; do
+echo "11. whole top bar"
+BOX=Main.layoutManager.panelBox
+# Shown means in place, hidden means slid above the screen.
+panel_shown() { echo "$BOX.translation_y === 0"; }
+panel_hidden() { echo "$BOX.translation_y <= -$BOX.height + 1"; }
+WORK_Y="Main.layoutManager.getWorkAreaForMonitor(Main.layoutManager.primaryIndex).y"
+# A virtual pointer, to push the top edge and leave the top bar.
+run "const seat = global.stage.get_context().get_backend().get_default_seat();
+     global._etbPointer = seat.create_virtual_device(imports.gi.Clutter.InputDeviceType.POINTER_DEVICE); 1"
+point() { run "global._etbPointer.notify_absolute_motion(global.get_current_time() * 1000, $1, $2); 1"; }
+point 640 400
+# A new pointer may start at the hot corner, which opens the overview.
+run "Main.overview.hide(); 1"; pause 1.5
+expect "$WORK_Y > 0" "the top bar does not reserve its space by default"
+dconf write ${P}panel-mode "'never'"
+pause
+expect "$(panel_hidden)" "top bar not hidden in never mode"
+expect "$WORK_Y === 0" "windows do not get the space of a hidden top bar"
+shot 07-panel-hidden
+run "Main.overview.show(); 1"; pause 1.5
+expect "$(panel_shown)" "top bar not shown in the overview"
+expect "Main.overview._overview._controls._searchEntryBin.get_style()?.includes('padding-top')" \
+    "search entry not pushed below the top bar"
+shot 08-panel-overview
+run "Main.overview.hide(); 1"; pause 1.5
+expect "$(panel_hidden)" "top bar not hidden after the overview"
+dconf write ${P}panel-show-in-overview false
+run "Main.overview.show(); 1"; pause 1.5
+expect "$(panel_hidden)" "top bar shown in the overview against the setting"
+run "Main.overview.hide(); 1"; pause 1.5
+dconf reset ${P}panel-show-in-overview
+run "$OBJ._togglePanel(); 1"; pause
+expect "$(panel_shown)" "shortcut did not show the top bar"
+run "$OBJ._togglePanel(); 1"; pause
+expect "$(panel_hidden)" "second press did not return the top bar to its mode"
+run "$OBJ._toggleReveal(); 1"; pause
+expect "$(panel_shown)" "reveal hidden items did not show the top bar"
+run "$OBJ._toggleReveal(); 1"; pause
+expect "$OBJ._hider._barrier !== null" "no pressure barrier at the top edge"
+point 640 2
+run "$OBJ._onPressure(); 1"; pause
+expect "$(panel_shown)" "pushing the top edge did not show the top bar"
+pause 1
+expect "$(panel_shown)" "top bar hid while the pointer was on it"
+point 640 400
+pause 1.2
+expect "$(panel_hidden)" "top bar did not hide after the pointer left"
+run "Main.panel.toggleQuickSettings(); 1"; pause 0.1
+expect "$(panel_shown)" "top bar not shown at once for its menu"
+run "Main.panel.closeQuickSettings(); 1"; pause
+expect "$(panel_hidden)" "top bar not hidden after its menu closed"
+
+echo "12. hide automatically"
+dconf write ${P}panel-mode "'auto'"
+dconf write ${P}panel-hide-when "['overlap', 'maximized']"
+pause
+expect "$(panel_shown)" "auto mode hid the top bar with no window"
+run "$OBJ._setStates({overlap: true}); 1"; pause
+expect "$(panel_hidden)" "a window touching the top bar did not hide it"
+run "$OBJ._setStates({overlap: false, windows: true}); 1"; pause
+expect "$(panel_shown)" "an unchecked condition hid the top bar"
+run "$OBJ._setStates({maximized: true}); 1"; pause
+expect "$(panel_hidden)" "a maximized window did not hide the top bar"
+run "$OBJ._syncWindows(); 1"; pause
+expect "$(panel_shown)" "top bar not shown again with no window"
+dconf write ${P}panel-mode "'never'"
+pause
+run "Main.extensionManager.disableExtension('$ETB_UUID'); 1"; pause
+expect "$(panel_shown) && $WORK_Y > 0" "top bar not restored on disable"
+run "Main.extensionManager.enableExtension('$ETB_UUID'); 1"; pause 1
+expect "$(panel_hidden)" "top bar not hidden again after enable"
+dconf reset ${P}panel-mode
+dconf reset ${P}panel-hide-when
+pause
+expect "$(panel_shown) && $WORK_Y > 0" "always mode did not give the space back"
+
+echo "13. preferences window"
+n=9
+for page in items behavior topbar item; do
     # The prefs app is D-Bus activated: pass the page through the activation
     # environment and restart only the instance on this private bus.
     if [ $page = item ]; then
@@ -233,7 +315,7 @@ for page in items behavior item; do
     [ -n "$pid" ] && kill "$pid" && pause 1
     gnome-extensions prefs "$ETB_UUID" >/dev/null 2>&1 || true
     pause 4
-    shot "0$n-preferences-$page"
+    shot "$(printf %02d $n)-preferences-$page"
     n=$((n + 1))
 done
 
