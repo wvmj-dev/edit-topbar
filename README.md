@@ -1,8 +1,10 @@
 # Edit Top Bar
 
-A GNOME Shell extension to rearrange, hide and show the items of the top bar.
+A GNOME Shell extension to rearrange, hide and show the top bar and its items.
 
 Move any indicator to the left, center or right, reorder the small icons inside the system menu (network, volume, battery...) and choose **when** each item appears: always, never, only in the overview, only on hover, only on empty workspaces, and more. Every item can have its own keyboard shortcut, and one shortcut reveals everything that is hidden.
+
+The whole top bar can hide too: always, or only when a window touches it, a window is maximized or the workspace has windows. It comes back in the overview, when the pointer pushes the top edge, when one of its menus opens, or with a shortcut.
 
 | Default top bar |
 |---|
@@ -14,9 +16,17 @@ Move any indicator to the left, center or right, reorder the small icons inside 
 | **After the "reveal hidden items" shortcut** |
 | ![Every hidden item visible again](docs/screenshots/topbar-revealed.png) |
 
-| Items page | Item settings | Behavior page |
-|---|---|---|
-| ![List of top bar items grouped by Left, Right and System menu icons](docs/screenshots/preferences-items.png) | ![Position, visibility rule and shortcut of the clock](docs/screenshots/preferences-item.png) | ![Reveal shortcut, timeout, hover delay and reset](docs/screenshots/preferences-behavior.png) |
+| Whole top bar hidden | Shown again in the overview |
+|---|---|
+| ![Desktop without the top bar](docs/screenshots/panel-hidden.png) | ![Overview with the top bar above the search entry](docs/screenshots/panel-overview.png) |
+
+| Items page | Item settings |
+|---|---|
+| ![List of top bar items grouped by Left, Right and System menu icons](docs/screenshots/preferences-items.png) | ![Position, visibility rule and shortcut of the clock](docs/screenshots/preferences-item.png) |
+
+| Top Bar page | Behavior page |
+|---|---|
+| ![Mode, overview, pointer, conditions and shortcut of the whole top bar](docs/screenshots/preferences-topbar.png) | ![Reveal shortcut, timeout, hover delay and reset](docs/screenshots/preferences-behavior.png) |
 
 The screenshots are taken by the [smoke test](#smoke-test-buildsh-test). The preferences in them are in Brazilian Portuguese, one of the bundled translations.
 
@@ -54,14 +64,27 @@ The screenshots are taken by the [smoke test](#smoke-test-buildsh-test). The pre
   | Only on empty workspaces | when the current workspace has no windows |
   | Only when the workspace has windows | when the current workspace has at least one window |
 
+- **Hide the whole top bar:**
+
+  | Mode | The top bar is... |
+  |---|---|
+  | Always | shown, as in plain GNOME (the default; the extension does not touch it) |
+  | Hidden | hidden, except in the overview, while the pointer pushes the top edge, while one of its menus is open, or with a shortcut |
+  | Hide automatically | hidden while any of the checked situations is true: **a window touches the top bar** ("intellihide"), **a window is maximized**, or **the workspace has windows** |
+
+  - **show in the overview** can be turned off;
+  - **show when the pointer pushes the top edge** (like GNOME's hot corner, with the same pressure) can be turned off;
+  - while the top bar can hide, maximized windows and the overview **use its space**;
+  - it slides in and out, following GNOME's animation setting.
 - **Shortcuts:**
-  - **reveal hidden items** (`Super`+`Alt`+`H` by default): shows every hidden item; press again to hide them. Optionally hides them again after a few seconds;
+  - **reveal hidden items** (`Super`+`Alt`+`H` by default): shows every hidden item and the top bar; press again to hide them. Optionally hides them again after a few seconds;
+  - **show or hide the top bar** (`Super`+`Alt`+`T` by default): works in every mode, even *Always*; the next press returns the top bar to its mode;
   - **one shortcut per item**: shows a hidden item or hides a shown one; the next press returns the item to its rule.
 - **New indicators** from other extensions appear where their extension put them, and keep the position you give them, even after that extension is disabled and enabled again.
-- **Clean disable:** turning the extension off puts every item back in its original place and visibility.
-- **Preferences in two pages**, Items and Behavior, with changes applied right away.
+- **Clean disable:** turning the extension off puts every item back in its original place and visibility, and the top bar back in place with its space reserved.
+- **Preferences in three pages**, Items, Top Bar and Behavior, with changes applied right away.
 - **Translations:** Brazilian Portuguese and Spanish.
-- **Lightweight:** nothing is polled. The extension reacts to signals (items added or removed, overview, hover, windows) and only moves what is out of place.
+- **Lightweight:** nothing is polled in the background. The extension reacts to signals (items added or removed, overview, hover, windows) and only moves what is out of place. The only timer runs while the top bar is shown by the pointer, to notice when the pointer leaves.
 
 ## Requirements
 
@@ -158,14 +181,26 @@ On each row:
 
 Items with a rule other than **Always** have a dimmed icon, and the row's subtitle shows the rule and the shortcut.
 
+### Top Bar page
+
+| Option | What it does |
+|---|---|
+| **Show the top bar** | *Always*, *Hidden* or *Hide automatically* (see [Features](#features)) |
+| **Show in the overview** | Shows the hidden top bar while the overview is open. Not used in *Always* mode |
+| **Show when the pointer pushes the top edge** | Push the pointer against the top of the primary monitor to bring the top bar in; it hides again once the pointer leaves it, after the **Hide delay** of the Behavior page. Not used in *Always* mode |
+| **Hide automatically when** | The situations of *Hide automatically* mode; any checked one hides the top bar. By default only *a window touches the top bar* |
+| **Show or hide the top bar** | Shortcut that toggles the top bar in any mode. The arrow button restores `Super`+`Alt`+`T` |
+
+Whatever the mode, the top bar shows up while one of its menus is open, so `Super`+`S` (quick settings) and `Super`+`V` (notifications) still work with it hidden.
+
 ### Behavior page
 
 | Option | What it does |
 |---|---|
-| **Reveal hidden items** | Shortcut that shows every hidden item. Press again to hide them. The arrow button restores `Super`+`Alt`+`H` |
+| **Reveal hidden items** | Shortcut that shows every hidden item and the top bar. Press again to hide them. The arrow button restores `Super`+`Alt`+`H` |
 | **Hide revealed items after** | Seconds after which revealed items hide again on their own. `0` keeps them until the shortcut is pressed again |
-| **Hide delay** | Milliseconds before items with the "pointer over the top bar" rule hide after the pointer leaves. Avoids flicker when the pointer crosses the edge |
-| **Restore the default top bar** | Removes every position, rule and item shortcut, after a confirmation |
+| **Hide delay** | Milliseconds before items with the "pointer over the top bar" rule, and a top bar shown by the pointer, hide after the pointer leaves. Avoids flicker when the pointer crosses the edge |
+| **Restore the default top bar** | Removes every position, rule and item shortcut and sets the top bar back to *Always*, after a confirmation. The reveal and top bar shortcuts are kept |
 
 ### Examples
 
@@ -174,6 +209,8 @@ Items with a rule other than **Always** have a dimmed icon, and the row's subtit
 - **Indicators only while you look for them:** set them to *Only when the pointer is over the top bar*.
 - **Hide the microphone icon**, which is shown whenever an app records audio: open *Microphone* under *System menu icons* and set it to *Never*.
 - **Show an extension's indicator only in the overview:** set it to *Only in the overview*.
+- **More room on a small screen:** on the Top Bar page, choose *Hide automatically* with *A window is maximized*. Maximized windows get the full height, and the top bar comes back on an empty desktop, in the overview or when you push the top edge.
+- **No top bar at all, like a kiosk:** choose *Hidden* and turn off the overview and pointer options. `Super`+`Alt`+`T` still brings it back.
 
 ## Settings
 
@@ -189,6 +226,10 @@ dconf write /org/gnome/shell/extensions/edit-topbar/rules "{'activities': 'never
 
 # Super+Alt+1 toggles the clock
 dconf write /org/gnome/shell/extensions/edit-topbar/shortcuts "{'dateMenu': '<Super><Alt>1'}"
+
+# Hide the whole top bar when a window is maximized or touches it
+dconf write /org/gnome/shell/extensions/edit-topbar/panel-mode "'auto'"
+dconf write /org/gnome/shell/extensions/edit-topbar/panel-hide-when "['overlap', 'maximized']"
 ```
 
 | Key | Type | Default | Description |
@@ -197,6 +238,11 @@ dconf write /org/gnome/shell/extensions/edit-topbar/shortcuts "{'dateMenu': '<Su
 | `rules` | `a{ss}` | `{}` | Item id → rule: `always`, `never`, `overview`, `desktop`, `hover`, `empty-workspace` or `windows`. Missing items are always shown |
 | `shortcuts` | `a{ss}` | `{}` | Item id → accelerator, such as `<Super><Alt>1` |
 | `reveal-shortcut` | `as` | `['<Super><Alt>h']` | Shortcut that reveals every hidden item. `[]` disables it |
+| `panel-mode` | `s` | `'always'` | Whole top bar: `always`, `never` (hidden) or `auto` (hidden while any of `panel-hide-when` is true) |
+| `panel-hide-when` | `as` | `['overlap']` | Situations of `auto` mode: `overlap` (a window touches the top bar), `maximized` (a window is maximized on its monitor), `windows` (the workspace has windows; minimized ones do not count) |
+| `panel-show-in-overview` | `b` | `true` | Show the hidden top bar in the overview |
+| `panel-reveal-on-pressure` | `b` | `true` | Show the hidden top bar when the pointer pushes the top edge |
+| `panel-shortcut` | `as` | `['<Super><Alt>t']` | Shortcut that shows or hides the top bar. `[]` disables it |
 | `reveal-timeout` | `i` | `0` | Seconds before revealed items hide again (0 to 600). `0` waits for the shortcut |
 | `hover-delay` | `i` | `500` | Milliseconds before "on hover" items hide (0 to 5000) |
 | `known-items` | `a(ssss)` | `[]` | **Written by the extension.** Items found in the top bar as `(id, box, label, icon)`, read by the preferences. Changing it has no effect |
@@ -269,18 +315,36 @@ The conditions come from:
 |---|---|
 | Overview | `Main.overview` signals `showing` and `hiding` |
 | Pointer over the top bar | `Main.panel.hover` (the extension turns on `track_hover`) and the `open-state-changed` signal of every item's menu, so an item does not disappear while its own menu is open |
-| Windows in the workspace | `window-added` and `window-removed` of the active workspace, counting windows that are not skipped by the taskbar and are not the desktop |
+| Windows in the workspace | Every window is watched (`window-created`, `position-changed`, `size-changed`, `workspace-changed`, `notify::minimized`, `unmanaged`) and checked once per idle. Only windows on the active workspace that are not minimized, not skipped by the taskbar and not the desktop count |
+
+### Hiding the whole top bar
+
+`isPanelVisible()` in [rules.js](rules.js) decides, in this order:
+
+1. the top bar shortcut, if pressed, wins;
+2. in *Always* mode, the top bar is shown;
+3. it is shown while revealed by the "reveal hidden items" shortcut, while the pointer brought it in, and while one of its menus is open;
+4. in the overview, it follows *Show in the overview*;
+5. otherwise, *Hidden* hides it and *Hide automatically* hides it while any checked situation is true.
+
+[panel.js](panel.js) then does the work on `Main.layoutManager.panelBox`, the container of the top bar:
+
+- **Sliding:** the box eases its `translation_y` to minus its height (200 ms), so it moves out of the screen. Nothing is hidden or destroyed, so the indicators keep working. A menu opening from the hidden top bar shows it at once instead, before the menu is positioned under its button.
+- **Space:** GNOME tracks the box as chrome with `affectsStruts`, which reserves its height at the top of the work area. While the top bar can hide, the extension tracks it again without struts, so maximized windows and the overview take the full height. In *Always* mode the space stays reserved, and only the shortcut takes it away while it hides the top bar. GNOME measures the reserved space when the box's allocation changes, not when it slides, so the box is tracked again once it is back in place.
+- **Overview:** without struts, the overview starts at the top of the screen, under the top bar. When the top bar is shown in the overview, the search entry gets a top padding of the top bar's height so it is not covered.
+- **Top edge:** a `Meta.Barrier` along the top of the primary monitor lets the pointer move down only, and GNOME's `Layout.PressureBarrier` (the hot corner's, 100 px within 1 s) fires when the pointer pushes up against it. The top bar then slides in under a pointer that does not move, so no enter or leave event is guaranteed: while it is shown this way, the pointer position is checked every 100 ms, and the top bar hides once the pointer has been away for the hover delay.
+- **Fullscreen:** the box keeps GNOME's `trackFullscreen`, so GNOME still hides it over fullscreen windows.
 
 ### Shortcuts
 
-- **Reveal hidden items** uses `Main.wm.addKeybinding()` with the `reveal-shortcut` key.
+- **Reveal hidden items** and **show or hide the top bar** use `Main.wm.addKeybinding()` with the `reveal-shortcut` and `panel-shortcut` keys.
 - **Item shortcuts** are dynamic, so they cannot have their own schema keys. They are grabbed with `global.display.grab_accelerator()` and allowed with `Main.wm.allowKeybinding()`, the same way GNOME Shell serves the `GrabAccelerator` D-Bus method. A shortcut that is already in use cannot be grabbed: the extension logs a warning and skips it.
 
 Both work on the desktop and in the overview.
 
 ### Disabling
 
-`disable()` disconnects every signal, releases the shortcuts, gives the visibility of each hidden item back to its indicator and puts every moved item back in its original box and position. Items that appeared after the layout was applied are put back after the original ones.
+`disable()` disconnects every signal, releases the shortcuts, gives the visibility of each hidden item back to its indicator and puts every moved item back in its original box and position. Items that appeared after the layout was applied are put back after the original ones. The top bar slides back in place at once, reserves its space again, the pressure barrier is removed and the search entry loses its padding.
 
 The extension does not declare `session-modes`, so GNOME disables it on the lock screen and enables it again after unlocking. The lock screen therefore shows GNOME's default top bar.
 
@@ -291,6 +355,7 @@ edit-topbar/
 ├── metadata.json          # UUID, supported versions, schema and gettext domain
 ├── extension.js           # Finding items, moving, hiding, conditions and shortcuts
 ├── prefs.js               # Preferences window (GTK 4 + libadwaita)
+├── panel.js               # Sliding the whole top bar, its space, the top edge and the overview padding
 ├── rules.js               # Visibility rules and layout merging (no GNOME Shell imports)
 ├── schemas/               # GSettings schema
 ├── po/                    # Template (.pot) and translations (pt_BR, es)
@@ -335,6 +400,7 @@ edit-topbar/
 [tests/unit.js](tests/unit.js) runs with plain `gjs`, in a few seconds and without GNOME Shell. It covers [rules.js](rules.js):
 
 - every rule in every state, the reveal shortcut and the per-item override;
+- every top bar mode and condition, the overview, the pointer, open menus, the reveal shortcut and the top bar shortcut;
 - layouts: empty, partial, items moved across boxes, absent items, duplicated items, items that try to leave or enter the system menu, a new indicator next to its neighbour, and that no item is ever lost or duplicated;
 - moving an item in the preferences and keeping absent items when saving.
 
@@ -356,7 +422,9 @@ The script checks, in order:
 8. an indicator that shows itself while hidden is hidden again, and gets its own visibility back when the rule is removed;
 9. resetting the layout puts every item back;
 10. disabling restores the top bar, and enabling applies the layout again;
-11. both preferences pages and an item's settings open (screenshots).
+11. the whole top bar: *Hidden* mode gives its space to the windows, it shows in the overview with the search entry pushed down (and stays hidden when that is turned off), the top bar shortcut, the reveal shortcut, the top edge with a virtual pointer (shows, stays while the pointer is on it, hides after it leaves) and a menu opening;
+12. *Hide automatically* with each checked situation and an unchecked one, disabling restores the top bar and its space, enabling hides it again, and *Always* reserves the space again;
+13. the three preferences pages and an item's settings open (screenshots).
 
 It fails on any `JS ERROR`, `JS WARNING` or `Gjs-CRITICAL` in the shell log. Screenshots and logs go to `tests/output/`.
 
@@ -411,6 +479,9 @@ The CI fails if a translation has untranslated or fuzzy strings, or if `po/edit-
 - Item shortcuts that clash with a shortcut already used by GNOME or another app are not grabbed (see [Logs](#logs)).
 - The lock screen always shows GNOME's default top bar (see [Disabling](#disabling)).
 - With the clock moved to a side box, GNOME still shows notification banners at the top center.
+- While the top bar can hide, notification banners appear at the very top of the screen and may cover a shown top bar for a few seconds.
+- The top edge only works on the primary monitor, where the top bar is. It needs pointer barriers, which Wayland always supports and X11 supports with XInput 2.3.
+- Do not enable this together with another extension that hides the top bar, such as *Hide Top Bar*: both would move the same box. Keep *Show the top bar* on *Always* or disable the other one.
 
 ## License
 
