@@ -7,7 +7,7 @@ import Gtk from 'gi://Gtk';
 
 import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
-import {BOXES, PANEL_BOXES, RULES, mergeLayout, moveItem} from './rules.js';
+import {BOXES, PANEL_BOXES, PANEL_CONDITIONS, PANEL_MODES, RULES, mergeLayout, moveItem} from './rules.js';
 
 const STATUS_PREFIX = 'status:';
 const FALLBACK_ICON = 'application-x-addon-symbolic';
@@ -52,6 +52,22 @@ function boxTitles() {
         center: _('Center'),
         right: _('Right'),
         status: _('System menu icons'),
+    };
+}
+
+function panelModeTitles() {
+    return {
+        'always': _('Always'),
+        'never': _('Hidden'),
+        'auto': _('Hide automatically'),
+    };
+}
+
+function panelConditionTitles() {
+    return {
+        'overlap': [_('A window touches the top bar'), _('Like "intellihide": windows away from the top keep it visible')],
+        'maximized': [_('A window is maximized'), _('On the monitor of the top bar')],
+        'windows': [_('The workspace has windows'), _('Minimized windows do not count')],
     };
 }
 
@@ -135,15 +151,10 @@ function captureShortcut(parent, callback) {
     dialog.present(parent.get_root());
 }
 
-const RevealShortcutRow = GObject.registerClass(
-class RevealShortcutRow extends Adw.ActionRow {
-    _init(settings) {
-        super._init({
-            title: _('Reveal hidden items'),
-            subtitle: _('Shows every hidden item; press again to hide them'),
-            activatable: true,
-        });
-        const key = 'reveal-shortcut';
+const ShortcutRow = GObject.registerClass(
+class ShortcutRow extends Adw.ActionRow {
+    _init(settings, key, title, subtitle) {
+        super._init({title, subtitle, activatable: true});
         const label = new Gtk.ShortcutLabel({
             disabled_text: _('Disabled'),
             valign: Gtk.Align.CENTER,
@@ -419,6 +430,7 @@ export default class EditTopBarPreferences extends ExtensionPreferences {
 
         const items = new ItemsPage(settings);
         window.add(items);
+        window.add(this._topBarPage(settings));
 
         const behavior = new Adw.PreferencesPage({
             name: 'behavior',
@@ -431,7 +443,8 @@ export default class EditTopBarPreferences extends ExtensionPreferences {
             title: _('Shortcuts'),
             description: _('Each item can also have its own shortcut, set on the Items page.'),
         });
-        reveal.add(new RevealShortcutRow(settings));
+        reveal.add(new ShortcutRow(settings, 'reveal-shortcut', _('Reveal hidden items'),
+            _('Shows every hidden item and the top bar; press again to hide them')));
         const timeout = Adw.SpinRow.new_with_range(0, 600, 1);
         timeout.title = _('Hide revealed items after');
         timeout.subtitle = _('Seconds; 0 keeps them visible until the shortcut is pressed again');
@@ -455,14 +468,15 @@ export default class EditTopBarPreferences extends ExtensionPreferences {
         resetRow.connect('activated', () => {
             const dialog = new Adw.AlertDialog({
                 heading: _('Restore the default top bar?'),
-                body: _('Positions, rules and item shortcuts will be removed.'),
+                body: _('Positions, rules, item shortcuts and the top bar visibility will be reset.'),
             });
             dialog.add_response('cancel', _('Cancel'));
             dialog.add_response('reset', _('Restore'));
             dialog.set_response_appearance('reset', Adw.ResponseAppearance.DESTRUCTIVE);
             dialog.connect('response', (_d, response) => {
                 if (response === 'reset') {
-                    for (const key of ['layout', 'rules', 'shortcuts'])
+                    for (const key of ['layout', 'rules', 'shortcuts', 'panel-mode', 'panel-hide-when',
+                        'panel-show-in-overview', 'panel-reveal-on-pressure'])
                         settings.reset(key);
                 }
             });
@@ -478,5 +492,83 @@ export default class EditTopBarPreferences extends ExtensionPreferences {
         const item = items.known().find(known => known.id === GLib.getenv('EDIT_TOPBAR_PREFS_ITEM'));
         if (item)
             window.connect('map', () => new ItemDialog(items, item).present(window));
+    }
+
+    _topBarPage(settings) {
+        const page = new Adw.PreferencesPage({
+            name: 'topbar',
+            title: _('Top Bar'),
+            icon_name: 'go-top-symbolic',
+        });
+
+        const visibility = new Adw.PreferencesGroup({
+            title: _('Visibility'),
+            description: _('While the top bar can hide, windows and the overview use its space.'),
+        });
+        const titles = panelModeTitles();
+        const mode = new Adw.ComboRow({
+            title: _('Show the top bar'),
+            model: Gtk.StringList.new(PANEL_MODES.map(name => titles[name])),
+        });
+        const syncMode = () => {
+            mode.selected = Math.max(0, PANEL_MODES.indexOf(settings.get_string('panel-mode')));
+        };
+        settings.connect('changed::panel-mode', syncMode);
+        syncMode();
+        mode.connect('notify::selected', () => {
+            if (PANEL_MODES[mode.selected] !== settings.get_string('panel-mode'))
+                settings.set_string('panel-mode', PANEL_MODES[mode.selected]);
+        });
+        visibility.add(mode);
+
+        const overview = new Adw.SwitchRow({title: _('Show in the overview')});
+        settings.bind('panel-show-in-overview', overview, 'active', Gio.SettingsBindFlags.DEFAULT);
+        visibility.add(overview);
+        const pressure = new Adw.SwitchRow({
+            title: _('Show when the pointer pushes the top edge'),
+            subtitle: _('It hides again after the pointer leaves, with the delay set on the Behavior page'),
+        });
+        settings.bind('panel-reveal-on-pressure', pressure, 'active', Gio.SettingsBindFlags.DEFAULT);
+        visibility.add(pressure);
+        page.add(visibility);
+
+        const conditions = new Adw.PreferencesGroup({
+            title: _('Hide automatically when'),
+            description: _('Any of the checked situations hides the top bar.'),
+        });
+        const conditionTitles = panelConditionTitles();
+        for (const condition of PANEL_CONDITIONS) {
+            const [title, subtitle] = conditionTitles[condition];
+            const row = new Adw.SwitchRow({title, subtitle});
+            const sync = () => {
+                row.active = settings.get_strv('panel-hide-when').includes(condition);
+            };
+            settings.connect('changed::panel-hide-when', sync);
+            sync();
+            row.connect('notify::active', () => {
+                const current = settings.get_strv('panel-hide-when');
+                if (current.includes(condition) === row.active)
+                    return;
+                settings.set_strv('panel-hide-when', row.active
+                    ? [...current, condition]
+                    : current.filter(other => other !== condition));
+            });
+            conditions.add(row);
+        }
+        page.add(conditions);
+
+        const syncSensitive = () => {
+            const current = settings.get_string('panel-mode');
+            overview.sensitive = pressure.sensitive = current !== 'always';
+            conditions.sensitive = current === 'auto';
+        };
+        settings.connect('changed::panel-mode', syncSensitive);
+        syncSensitive();
+
+        const shortcut = new Adw.PreferencesGroup({title: _('Shortcut')});
+        shortcut.add(new ShortcutRow(settings, 'panel-shortcut', _('Show or hide the top bar'),
+            _('Works in every mode; press again to return to the mode above')));
+        page.add(shortcut);
+        return page;
     }
 }
